@@ -1,26 +1,26 @@
-# Этап 1: Сборка WAR-файла с помощью Maven
+# Stage 1: Build the WAR file using Maven
 FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Копируем файлы проекта
+# Copy project files
 COPY pom.xml .
 COPY src ./src
 
-# Запускаем сборку пакета
+# Build the package
 RUN mvn clean package -DskipTests
 
-# Этап 2: Запуск Tomcat с готовым WAR-файлом
+# Stage 2: Run Tomcat with the built WAR file
 FROM tomcat:10.1-jdk17
 
-# Удаляем стандартные приложения Tomcat (опционально, для чистоты)
+# Remove default Tomcat applications (optional, for a cleaner image)
 RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Копируем собранный WAR-файл из первого этапа
+# Copy the built WAR file from the first stage
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
 
-# Открываем порт (по умолчанию Tomcat слушает 8080)
+# Expose the port (Tomcat listens on 8080 by default)
 EXPOSE 8080
 
-# Запускаем Tomcat
+# Start Tomcat
 CMD ["catalina.sh", "run"]

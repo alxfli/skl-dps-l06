@@ -6,11 +6,15 @@ A sample Java HTTP service
 
     docker build -t my-java-app .
 
-## Running
+## Running Docker
 
     docker run -d -p 8080:8080 my-java-app
 
 The service listens on 127.0.0.1:8080
+
+## Running Docker compose
+
+    docker compose up -d
 
 ## Verification
 

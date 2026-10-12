@@ -16,6 +16,10 @@ The service listens on 127.0.0.1:8080
 
     docker compose up -d
 
+## Building Docker compose
+
+    docker compose up -d --build
+
 ## Verification
 
     curl -i http://localhost:8080/

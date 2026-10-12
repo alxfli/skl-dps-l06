@@ -1,0 +1,23 @@
+services:
+  builder:
+    build:
+      context: .
+      target: build
+    command: sh -c "mvn clean package -DskipTests && cp target/*.war /shared/ROOT.war"
+    volumes:
+      - target-data:/shared
+
+  prod:
+    build:
+      context: .
+      target: prod
+    volumes:
+      - target-data:/opt/tomcat/webapps
+    ports:
+      - "8080:8080"
+    depends_on:
+      builder:
+        condition: service_completed_successfully
+
+volumes:
+  target-data:

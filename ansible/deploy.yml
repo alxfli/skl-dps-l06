@@ -1,0 +1,40 @@
+---
+- hosts: build_node
+  become: true
+  tasks:
+    - name: Install JDK 21 and Maven
+      apt: { name: [openjdk-21-jdk, maven], update_cache: true }
+
+    - name: Create source directory
+      file: { path: /opt/src, state: directory }
+
+    - name: Copy pom.xml
+      copy: { src: "{{ playbook_dir }}/../pom.xml", dest: /opt/src/pom.xml }
+
+    - name: Copy sources
+      copy: { src: "{{ playbook_dir }}/../src", dest: /opt/src/ }
+
+    - name: Build WAR
+      command: { cmd: mvn clean package -DskipTests, chdir: /opt/src }
+
+    - name: Find built WAR
+      find: { paths: /opt/src/target, patterns: "*.war" }
+      register: war
+
+    - name: Fetch WAR to control node
+      fetch: { src: "{{ war.files[0].path }}", dest: /tmp/app.war, flat: true }
+
+- hosts: prod_node
+  become: true
+  tasks:
+    - name: Install JDK 21 and Tomcat 10
+      apt: { name: [openjdk-21-jdk-headless, tomcat10], update_cache: true }
+
+    - name: Remove old ROOT directory
+      file: { path: /var/lib/tomcat10/webapps/ROOT, state: absent }
+
+    - name: Deploy WAR as ROOT
+      copy: { src: /tmp/app.war, dest: /var/lib/tomcat10/webapps/ROOT.war, owner: tomcat, group: tomcat }
+
+    - name: Enable and restart Tomcat
+      systemd: { name: tomcat10, enabled: true, state: restarted }

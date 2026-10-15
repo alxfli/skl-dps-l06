@@ -2,7 +2,7 @@
 
 A sample Java HTTP service
 
-## Building the image
+## Building Docker
 
     docker build -t my-java-app .
 
@@ -12,13 +12,22 @@ A sample Java HTTP service
 
 The service listens on 127.0.0.1:8080
 
+## Building Docker compose
+
+    docker compose up -d --build
+
 ## Running Docker compose
 
     docker compose up -d
 
-## Building Docker compose
 
-    docker compose up -d --build
+## Building Ansible
+
+    cp ansible/inventory.ini.example ansible/inventory.ini
+
+## Running Ansible
+
+    ansible-playbook -i ansible/inventory.yml ansible/deploy.yml
 
 ## Verification
 

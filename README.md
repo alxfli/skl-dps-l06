@@ -20,14 +20,15 @@ The service listens on 127.0.0.1:8080
 
     docker compose up -d
 
-
 ## Building Ansible
 
     cp ansible/inventory.ini.example ansible/inventory.ini
 
 ## Running Ansible
 
-    ansible-playbook -i ansible/inventory.yml ansible/deploy.yml
+    ansible-galaxy collection install ansible.utils --upgrade
+
+    ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
 
 ## Verification
 

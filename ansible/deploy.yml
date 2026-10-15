@@ -9,10 +9,10 @@
       file: { path: /opt/src, state: directory }
 
     - name: Copy pom.xml
-      copy: { src: "{{ playbook_dir }}/../pom.xml", dest: /opt/src/pom.xml }
+      synchronize: { src: "{{ playbook_dir }}/../pom.xml", dest: /opt/src/pom.xml, mode: push, delete: true }
 
     - name: Copy sources
-      copy: { src: "{{ playbook_dir }}/../src", dest: /opt/src/ }
+      synchronize: { src: "{{ playbook_dir }}/../src", dest: /opt/src/, mode: push, delete: true }
 
     - name: Build WAR
       command: { cmd: mvn clean package -DskipTests, chdir: /opt/src }
@@ -22,7 +22,7 @@
       register: war
 
     - name: Fetch WAR to control node
-      fetch: { src: "{{ war.files[0].path }}", dest: /tmp/app.war, flat: true }
+      synchronize: { src: "{{ war.files[0].path }}", dest: /tmp/app.war, mode: pull }
 
 - hosts: prod_node
   become: true
@@ -34,7 +34,10 @@
       file: { path: /var/lib/tomcat10/webapps/ROOT, state: absent }
 
     - name: Deploy WAR as ROOT
-      copy: { src: /tmp/app.war, dest: /var/lib/tomcat10/webapps/ROOT.war, owner: tomcat, group: tomcat }
+      synchronize: { src: /tmp/app.war, dest: /var/lib/tomcat10/webapps/ROOT.war, mode: push, delete: true }
+
+    - name: Fix WAR ownership
+      file: { path: /var/lib/tomcat10/webapps/ROOT.war, owner: tomcat, group: tomcat, mode: "0644" }
 
     - name: Enable and restart Tomcat
       systemd: { name: tomcat10, enabled: true, state: restarted }

@@ -5,16 +5,6 @@
     state: present
     update_cache: true
 
-- name: Workaround for empty policy.d in tomcat10 (Ubuntu 26.04)
-  ansible.builtin.file:
-    path: "{{ policy_placeholder }}"
-    state: touch
-    owner: root
-    group: tomcat
-    mode: "0640"
-    modification_time: preserve
-    access_time: preserve
-
 - name: Remove old ROOT directory
   ansible.builtin.file:
     path: "{{ root_dir }}"

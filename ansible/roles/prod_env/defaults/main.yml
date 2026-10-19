@@ -1,0 +1,13 @@
+tomcat_packages:
+  - openjdk-21-jdk-headless
+  - tomcat10
+
+tomcat_service: tomcat10
+tomcat_webapps: /var/lib/tomcat10/webapps
+tomcat_conf: /var/lib/tomcat10/conf
+policy_dir: "{{ tomcat_conf }}/policy.d"
+policy_placeholder: "{{ policy_dir }}/01-catalina.policy"
+
+war_source: /tmp/app.war
+war_dest: "{{ tomcat_webapps }}/ROOT.war"
+root_dir: "{{ tomcat_webapps }}/ROOT"

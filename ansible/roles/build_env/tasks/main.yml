@@ -1,0 +1,40 @@
+---
+- name: Install JDK and Maven
+  ansible.builtin.apt:
+    name: "{{ maven_packages }}"
+    state: present
+    update_cache: true
+
+- name: Create build directory
+  ansible.builtin.file:
+    path: "{{ build_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Copy pom.xml
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../pom.xml"
+    dest: "{{ build_dir }}/pom.xml"
+
+- name: Copy sources
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../src"
+    dest: "{{ build_dir }}/"
+
+- name: Build WAR
+  ansible.builtin.command:
+    cmd: "mvn {{ maven_goal }}"
+    chdir: "{{ build_dir }}"
+  changed_when: true
+
+- name: Find built WAR
+  ansible.builtin.find:
+    paths: "{{ build_dir }}/target"
+    patterns: "*.war"
+  register: war_result
+
+- name: Fetch WAR to control node
+  ansible.builtin.fetch:
+    src: "{{ war_result.files[0].path }}"
+    dest: "{{ war_fetch_dest }}"
+    flat: true

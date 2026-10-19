@@ -1,0 +1,12 @@
+---
+- name: Build WAR on build node
+  hosts: build_node
+  become: true
+  roles:
+    - build_env
+
+- name: Deploy WAR on prod node
+  hosts: prod_node
+  become: true
+  roles:
+    - prod_env

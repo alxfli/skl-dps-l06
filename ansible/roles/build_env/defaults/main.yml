@@ -1,0 +1,6 @@
+build_dir: /opt/src
+war_fetch_dest: /tmp/app.war
+maven_packages:
+  - openjdk-21-jdk
+  - maven
+maven_goal: clean package -DskipTests

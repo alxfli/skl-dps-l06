@@ -1,0 +1,30 @@
+---
+- name: Create prod context directory
+  file: { path: "{{ prod_context }}", state: directory, mode: "0755" }
+
+- name: Copy WAR to context
+  copy: { src: "{{ war_local_path }}", dest: "{{ prod_context }}/ROOT.war" }
+
+- name: Render Dockerfile from template
+  template: { src: Dockerfile.j2, dest: "{{ prod_context }}/Dockerfile" }
+
+- name: Build application image
+  community.docker.docker_image:
+    name: "{{ app_image }}"
+    source: build
+    build:
+      path: "{{ prod_context }}"
+      pull: true
+    force_source: true
+
+- name: Remove existing container
+  community.docker.docker_container: { name: "{{ app_container }}", state: absent }
+
+- name: Run application container
+  community.docker.docker_container:
+    name: "{{ app_container }}"
+    image: "{{ app_image }}"
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ app_port }}:8080"

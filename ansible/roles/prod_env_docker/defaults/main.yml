@@ -1,0 +1,5 @@
+app_image: my-java-app:latest
+app_container: my-java-app
+app_port: 8080
+war_local_path: /tmp/ROOT.war
+prod_context: /opt/app-prod

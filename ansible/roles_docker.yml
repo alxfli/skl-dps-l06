@@ -1,0 +1,18 @@
+---
+- name: Install Docker on both nodes
+  hosts: all
+  become: true
+  roles:
+    - docker_common
+
+- name: Build WAR on build node
+  hosts: build_node
+  become: true
+  roles:
+    - build_env_docker
+
+- name: Build image and run container on prod node
+  hosts: prod_node
+  become: true
+  roles:
+    - prod_env_docker

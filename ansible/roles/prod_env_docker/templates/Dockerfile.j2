@@ -1,0 +1,11 @@
+FROM eclipse-temurin:17-jre-alpine
+
+RUN mkdir -p /opt/tomcat && \
+    wget -qO- https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.60/bin/apache-tomcat-10.1.60.tar.gz \
+      | tar -xz -C /opt/tomcat --strip-components=1 && \
+    rm -rf /opt/tomcat/webapps/* /opt/tomcat/bin/*.bat /opt/tomcat/bin/*.exe
+
+COPY ROOT.war /opt/tomcat/webapps/ROOT.war
+
+EXPOSE {{ app_port }}
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]

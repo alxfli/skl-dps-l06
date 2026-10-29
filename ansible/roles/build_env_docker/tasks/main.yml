@@ -1,0 +1,25 @@
+---
+- name: Create build context directory
+  file: { path: "{{ build_context }}", state: directory, mode: "0755" }
+
+- name: Copy pom.xml
+  copy: { src: "{{ playbook_dir }}/../pom.xml", dest: "{{ build_context }}/pom.xml" }
+
+- name: Copy sources
+  copy: { src: "{{ playbook_dir }}/../src", dest: "{{ build_context }}/" }
+
+- name: Run Maven package in container
+  command: >-
+    docker run --rm
+    -v {{ build_context }}:/app
+    -w /app
+    maven:3.9-eclipse-temurin-17
+    mvn -B clean package -DskipTests
+  changed_when: true
+
+- name: Find built WAR
+  find: { paths: "{{ build_context }}/target", patterns: "*.war" }
+  register: war_files
+
+- name: Fetch WAR to control node
+  fetch: { src: "{{ war_files.files[0].path }}", dest: /tmp/ROOT.war, flat: true }

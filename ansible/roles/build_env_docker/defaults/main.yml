@@ -1,0 +1,3 @@
+app_image: my-java-app:latest
+build_context: /opt/app-build
+image_tar: /tmp/my-java-app.tar

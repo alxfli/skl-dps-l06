@@ -34,6 +34,12 @@ The service listens on 127.0.0.1:8080
 
     ansible-playbook -i ansible/inventory.ini ansible/roles.yml
 
+## Running Ansible Roles with docker
+
+    ansible-galaxy collection install community.docker --upgrade
+
+    ansible-playbook -i ansible/inventory.ini ansible/roles_docker.yml
+
 ## Verification
 
     curl -i http://localhost:8080/
